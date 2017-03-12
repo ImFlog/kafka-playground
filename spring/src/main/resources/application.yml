@@ -1,0 +1,15 @@
+spring:
+  cloud:
+    stream:
+      bindings:
+        input:
+          destination: effectifs
+          group: spring
+          configuration:
+            key.serializer: org.apache.kafka.common.serialization.IntegerSerializer
+            value.serializer: org.apache.kafka.common.serialization.StringSerializer
+        output:
+          destination: effectifs
+          configuration:
+            key.serializer: org.apache.kafka.common.serialization.IntegerSerializer
+            value.serializer: org.apache.kafka.common.serialization.StringSerializer

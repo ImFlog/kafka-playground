@@ -1,0 +1,4 @@
+com/ippon/kafka/basic/Application.class
+com/ippon/kafka/basic/BasicConsumer.class
+com/ippon/kafka/basic/BasicProducer.class
+com/ippon/kafka/basic/Effectif.class
