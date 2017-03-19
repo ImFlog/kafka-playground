@@ -50,7 +50,7 @@ public class BasicProducer implements Runnable {
                 .map(this::readCsv)
                 .filter(Objects::nonNull)
                 .forEach(effectif -> sendToKafka(kafkaProducer, effectif));
-        logger.info("I read everything : {}", count);
+        logger.info("Finished reading {} elements", count);
     }
 
     private void sendToKafka(KafkaProducer<Integer, String> kafkaProducer, Effectif effectif) {
