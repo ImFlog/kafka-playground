@@ -41,7 +41,9 @@ public class Effectif {
         this.geoLevelId = geoLevelId;
     }
 
-    //rentrée
+    /**
+     * rentrée
+     */
     private int year;
 
     // Rentrée universitaire
