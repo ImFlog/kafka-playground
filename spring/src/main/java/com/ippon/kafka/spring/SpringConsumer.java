@@ -1,5 +1,6 @@
 package com.ippon.kafka.spring;
 
+import com.ippon.kafka.spring.model.Effectif;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.stream.annotation.EnableBinding;

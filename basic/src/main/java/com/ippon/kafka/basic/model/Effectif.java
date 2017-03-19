@@ -1,4 +1,4 @@
-package com.ippon.kafka.basic;
+package com.ippon.kafka.basic.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -12,7 +12,7 @@ public class Effectif {
     }
 
     public Effectif(int year, String schoolYear, String geographicLevel,
-                    String geographicUnit, String group, String estableshmentGroup,
+                    String geographicUnit, String group, String establishmenGroup,
                     String sector, String establishmentSector, String sex,
                     String sexDesc, Double studentCount, String dutStudents,
                     Double dutStudentsCount, String ingStudents, Double ingStudentsCount,
@@ -23,7 +23,7 @@ public class Effectif {
         this.geographicLevel = geographicLevel;
         this.geographicUnit = geographicUnit;
         this.group = group;
-        this.estableshmentGroup = estableshmentGroup;
+        this.establishmenGroup = establishmenGroup;
         this.sector = sector;
         this.establishmentSector = establishmentSector;
         this.sex = sex;
@@ -57,7 +57,7 @@ public class Effectif {
     private String group;
 
     // Regroupements de formations ou d’établissements
-    private String estableshmentGroup;
+    private String establishmenGroup;
 
     // secteur
     private String sector;
@@ -144,12 +144,12 @@ public class Effectif {
         this.group = group;
     }
 
-    public String getEstableshmentGroup() {
-        return estableshmentGroup;
+    public String getEstablishmenGroup() {
+        return establishmenGroup;
     }
 
-    public void setEstableshmentGroup(String estableshmentGroup) {
-        this.estableshmentGroup = estableshmentGroup;
+    public void setEstablishmenGroup(String establishmenGroup) {
+        this.establishmenGroup = establishmenGroup;
     }
 
     public String getSector() {

@@ -1,13 +1,12 @@
 package com.ippon.kafka.basic;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.csv.CsvMapper;
+import com.ippon.kafka.basic.model.Effectif;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -20,19 +19,20 @@ import java.util.Properties;
 /**
  * Created by @ImFlog on 04/03/2017.
  */
-@Order(value = Ordered.HIGHEST_PRECEDENCE)
-@Component
-public class BasicProducer implements CommandLineRunner {
-    private static final CsvMapper csvMapper = new CsvMapper();
+public class BasicProducer implements Runnable {
     private static final ObjectMapper jsonMapper = new ObjectMapper();
     private static final Logger logger = LoggerFactory.getLogger(BasicProducer.class);
 
+    public static String INPUT_FILE = "partial_data.csv";
+
+    private Long count = 0L;
+
     @Override
-    public void run(String... args) {
+    public void run() {
         Properties props = new Properties();
         props.put("bootstrap.servers", "localhost:9092");
-        props.put("acks", "1");
-        props.put("retries", 1);
+        // props.put("acks", "1");
+        // props.put("retries", 1);
         // props.put("compression.type", "none"); // Could be gzip, snappy or lz4
         //props.put("batch.size", 16384);
         // props.put("buffer.memory", 33554432);
@@ -44,40 +44,35 @@ public class BasicProducer implements CommandLineRunner {
 
         // Read file
         BufferedReader bufferedReader = new BufferedReader(
-                new InputStreamReader(getClass().getResourceAsStream("/" + args[0])));
+                new InputStreamReader(getClass().getResourceAsStream("/" + INPUT_FILE)));
         bufferedReader.lines()
-                .skip(1L)
+                .skip(1L) // Skip headers
                 .map(this::readCsv)
                 .filter(Objects::nonNull)
-                .forEach(effectif -> {
-                    try {
-                        // Send to kafka
-                        // TODO : It's a bit dumb to rewrite in json in kafka
-                        kafkaProducer.send(
-                                new ProducerRecord<>(
-                                        "effectifs",
-                                        effectif.getYear(), // Shard by year
-                                        jsonMapper.writeValueAsString(effectif)));
-                    } catch (Exception e) {
-                        logger.error(e.getMessage(), e);
-                    }
-                });
-        logger.info("I read everything : {}", bufferedReader.lines().count());
+                .forEach(effectif -> sendToKafka(kafkaProducer, effectif));
+        logger.info("I read everything : {}", count);
+    }
+
+    private void sendToKafka(KafkaProducer<Integer, String> kafkaProducer, Effectif effectif) {
+        try {
+            kafkaProducer.send(
+                    new ProducerRecord<>(
+                            "effectifs",
+                            effectif.getYear(), // Shard by year
+                            jsonMapper.writeValueAsString(effectif)));
+            count++;
+            if (count % 10000 == 0) {
+                logger.info("Sent {} messages, last => year : {}, location : {}",
+                        count, effectif.getYear(), effectif.getGeographicUnit());
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
     }
 
     private Effectif readCsv(String line) {
-        // DOES NOT WORK
-        /*try {
-            return csvMapper.readerFor(Effectif.class)
-                    .with(csvMapper.schemaFor(Effectif.class))
-                    .readValue(line);
-        } catch (IOException e) {
-            logger.error("Could not read csv line", e);
-        }
-        return null;*/
-        // TODO : rewrite this, it's ugly
         String[] columns = line.split(";");
-        Effectif effectif = new Effectif(
+        return new Effectif(
                 Integer.parseInt(columns[0]),
                 columns[1],
                 columns[2],
@@ -99,6 +94,5 @@ public class BasicProducer implements CommandLineRunner {
                 columns[18],
                 columns[19],
                 columns[20]);
-        return effectif;
     }
 }

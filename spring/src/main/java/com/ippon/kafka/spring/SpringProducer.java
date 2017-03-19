@@ -1,7 +1,7 @@
 package com.ippon.kafka.spring;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ippon.kafka.spring.model.Effectif;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,34 +37,24 @@ public class SpringProducer implements CommandLineRunner {
                 .skip(1L)
                 .map(this::readCsv)
                 .filter(Objects::nonNull)
-                .forEach(effectif -> {
-                    // Send to kafka
-                    // TODO : KEY SERIALIZATION ERROR !!!!!!
-                    try {
-                        source.output()
-                                .send(MessageBuilder.withPayload(jsonMapper.writeValueAsString(effectif))
-                                        .setHeader(KafkaHeaders.MESSAGE_KEY, effectif.getYear())
-                                        .build());
-                    } catch (Exception e) {
-                        logger.error(e.getMessage(), e);
-                    }
-                });
+                .forEach(this::sendToKafka);
         logger.info("I read everything : {}", bufferedReader.lines().count());
     }
 
-    private Effectif readCsv(String line) {
-        // DOES NOT WORK
-        /*try {
-            return csvMapper.readerFor(Effectif.class)
-                    .with(csvMapper.schemaFor(Effectif.class))
-                    .readValue(line);
-        } catch (IOException e) {
-            logger.error("Could not read csv line", e);
+    private void sendToKafka(Effectif effectif) {
+        try {
+            source.output()
+                    .send(MessageBuilder.withPayload(jsonMapper.writeValueAsString(effectif))
+                            .setHeader(KafkaHeaders.MESSAGE_KEY, effectif.getYear())
+                            .build());
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
         }
-        return null;*/
-        // TODO : rewrite this, it's ugly
+    }
+
+    private Effectif readCsv(String line) {
         String[] columns = line.split(";");
-        Effectif effectif = new Effectif(
+        return new Effectif(
                 Integer.parseInt(columns[0]),
                 columns[1],
                 columns[2],
@@ -86,6 +76,5 @@ public class SpringProducer implements CommandLineRunner {
                 columns[18],
                 columns[19],
                 columns[20]);
-        return effectif;
     }
 }
