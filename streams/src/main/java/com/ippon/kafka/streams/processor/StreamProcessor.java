@@ -1,4 +1,4 @@
-package com.ippon.kafka.streams;
+package com.ippon.kafka.streams.processor;
 
 import com.ippon.kafka.streams.model.Effectif;
 import com.ippon.kafka.streams.serdes.SerdeFactory;
@@ -43,7 +43,8 @@ public class StreamProcessor implements CommandLineRunner {
         KStreamBuilder kStreamBuilder = new KStreamBuilder();
 
         // Init common topology
-        KStream<Integer, Effectif> effectifsStream = kStreamBuilder.stream(Serdes.Integer(), effectifSerde, inputTopic)
+        KStream<Integer, Effectif> effectifsStream = kStreamBuilder
+                .stream(Serdes.Integer(), effectifSerde, inputTopic)
                 .filter((year, effectif) -> !"TOTAL".equals(effectif.getGroup()))
                 .filter((year, effectif) -> "Commune".equals(effectif.getGeographicLevel()));
 
@@ -103,7 +104,7 @@ public class StreamProcessor implements CommandLineRunner {
         // Student count variation between 2014 and 2015
         studentsPerCommune2014
                 .leftJoin(studentsPerCommune2015, this::calculateEvolution)
-                .print();
+                .print("Evolution 2014 2015");
 
         // ------------------------------------------------------
         //                  Start processing
@@ -138,7 +139,7 @@ public class StreamProcessor implements CommandLineRunner {
         settings.put(StreamsConfig.APPLICATION_ID_CONFIG, STREAM_APPLICATION_NAME);
         // Kafka bootstrap server (broker to talk to)
         settings.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
-        // default serdes for serialzing and deserializing key and value from and to streams
+        // default serdes for serializing and deserializing key and value from and to streams
         settings.put(StreamsConfig.KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
         settings.put(StreamsConfig.VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
 
