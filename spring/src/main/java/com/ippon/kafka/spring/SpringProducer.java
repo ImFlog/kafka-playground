@@ -6,10 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.cloud.stream.annotation.EnableBinding;
-import org.springframework.cloud.stream.messaging.Source;
-import org.springframework.integration.support.MessageBuilder;
-import org.springframework.kafka.support.KafkaHeaders;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
@@ -20,13 +17,16 @@ import java.util.Objects;
  * Created by @ImFlog on 04/03/2017.
  */
 @Component
-@EnableBinding(Source.class)
 public class SpringProducer implements CommandLineRunner {
 
     private static final ObjectMapper jsonMapper = new ObjectMapper();
     private static Logger logger = LoggerFactory.getLogger(SpringConsumer.class);
+
+    private static final String TOPIC = "effectifs-spring";
+    private Long count = 0L;
+
     @Autowired
-    private Source source;
+    private KafkaTemplate<Integer, String> template;
 
     @Override
     public void run(String... args) {
@@ -38,15 +38,17 @@ public class SpringProducer implements CommandLineRunner {
                 .map(this::readCsv)
                 .filter(Objects::nonNull)
                 .forEach(this::sendToKafka);
-        logger.info("I read everything : {}", bufferedReader.lines().count());
+        logger.info("Finished reading {} elements", count);
     }
 
     private void sendToKafka(Effectif effectif) {
         try {
-            source.output()
-                    .send(MessageBuilder.withPayload(jsonMapper.writeValueAsString(effectif))
-                            .setHeader(KafkaHeaders.MESSAGE_KEY, effectif.getYear())
-                            .build());
+            template.send(TOPIC, effectif.getYear(), jsonMapper.writeValueAsString(effectif));
+            count++;
+            if (count % 10000 == 0) {
+                logger.info("Sent {} messages, last => year : {}, location : {}",
+                        count, effectif.getYear(), effectif.getGeographicUnit());
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }

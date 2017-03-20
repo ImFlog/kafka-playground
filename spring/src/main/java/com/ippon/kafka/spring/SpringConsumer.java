@@ -1,26 +1,41 @@
 package com.ippon.kafka.spring;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ippon.kafka.spring.model.Effectif;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cloud.stream.annotation.EnableBinding;
-import org.springframework.cloud.stream.annotation.StreamListener;
-import org.springframework.cloud.stream.messaging.Sink;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
+
+import java.io.IOException;
 
 /**
  * Created by @ImFlog on 04/03/2017.
  */
 @Component
-@EnableBinding(Sink.class)
 public class SpringConsumer {
 
-    private static Logger logger = LoggerFactory.getLogger(SpringConsumer.class);
+    private static final Logger logger = LoggerFactory.getLogger(SpringConsumer.class);
+    private static final String TOPIC = "effectifs-spring";
 
-    @StreamListener(Sink.INPUT)
-    public void processData(Effectif effectif) {
-        logger.info("Read message => year : {}, location : {}",
-                effectif.getYear(),
-                effectif.getGeographicUnit());
+    private final ObjectMapper mapper = new ObjectMapper();
+
+    private Long count = 0L;
+
+    @KafkaListener(topics = TOPIC)
+    public void processData(ConsumerRecord<Integer, String> consumerRecord) {
+        try {
+            Effectif effectif = mapper.readValue(consumerRecord.value(), Effectif.class);
+            count++;
+            if (count % 10000 == 0) {
+                logger.info("Read {} messages, last => year : {}, location : {}",
+                        count,
+                        effectif.getYear(),
+                        effectif.getGeographicUnit());
+            }
+        } catch (IOException e) {
+            logger.error("Could not deserialize message");
+        }
     }
 }
