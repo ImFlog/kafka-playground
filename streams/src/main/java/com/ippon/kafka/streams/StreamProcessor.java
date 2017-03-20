@@ -97,7 +97,7 @@ public class StreamProcessor implements CommandLineRunner {
         System.out.println("Starting Kafka Streams");
         KafkaStreams kafkaStreams = new KafkaStreams(kStreamBuilder, config);
         kafkaStreams.start();
-        System.out.println("Now started CountriesStreams Example");
+        System.out.println("Kafka Streams started");
     }
 
     /**
