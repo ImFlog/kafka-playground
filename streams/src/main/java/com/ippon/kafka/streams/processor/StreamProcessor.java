@@ -126,7 +126,7 @@ public class StreamProcessor implements CommandLineRunner {
             return -100D;
         }
 
-        return  (newValue / previousValue) * 100;
+        return  ((newValue - previousValue) / previousValue) * 100;
     }
 
     /**
