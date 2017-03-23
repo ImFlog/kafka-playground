@@ -53,17 +53,17 @@ public class StreamProcessor implements CommandLineRunner {
         // ------------------------------------------------------
         //          1. Global student count per year            |
         // ------------------------------------------------------
-        KTable<Integer, Double> studentsPerYear = effectifsStream
+        KTable<Integer, Integer> studentsPerYear = effectifsStream
                 .map((year, effectif) -> new KeyValue<>(year, effectif.getStudentCount()))
-                .groupByKey(Serdes.Integer(), Serdes.Double())
+                .groupByKey(Serdes.Integer(), Serdes.Integer())
                 .aggregate(
-                        () -> 0D,
+                        () -> 0,
                         (aggKey, value, aggregate) -> aggregate + value,
-                        Serdes.Double(),
+                        Serdes.Integer(),
                         "studentsPerYear");
 
         // We can easily send to another topic
-        studentsPerYear.to(Serdes.Integer(), Serdes.Double(), "studentsPerYear");
+        studentsPerYear.to(Serdes.Integer(), Serdes.Integer(), "studentsPerYear");
         // Or print the result
         studentsPerYear.print();
 
@@ -144,7 +144,7 @@ public class StreamProcessor implements CommandLineRunner {
         settings.put(StreamsConfig.VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
 
         // We can also set Consumer properties
-        settings.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+        // settings.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
         return settings;
     }
 }

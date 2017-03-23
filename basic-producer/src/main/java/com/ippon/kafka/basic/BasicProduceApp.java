@@ -23,15 +23,7 @@ public class BasicProduceApp {
     private static Long count = 0L;
 
     public static void main(String[] args) throws InterruptedException {
-        Properties props = new Properties();
-        props.put("bootstrap.servers", "localhost:9092");
-        // props.put("acks", "1");
-        // props.put("retries", 1);
-        // props.put("compression.type", "none"); // Could be gzip, snappy or lz4
-        //props.put("batch.size", 16384);
-        // props.put("buffer.memory", 33554432);
-        props.put("key.serializer", "org.apache.kafka.common.serialization.IntegerSerializer");
-        props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        Properties props = buildKafkaProps();
 
         // Init producer from props
         KafkaProducer<Integer, String> kafkaProducer = new KafkaProducer<>(props);
@@ -41,7 +33,7 @@ public class BasicProduceApp {
                 new InputStreamReader(BasicProduceApp.class.getResourceAsStream("/" + args[0])));
         bufferedReader.lines()
                 .skip(1L) // Skip headers
-                .map(BasicProduceApp::readCsv)
+                .map(Effectif::buildEffectif)
                 .filter(Objects::nonNull)
                 .forEach(effectif -> sendToKafka(kafkaProducer, effectif));
         logger.info("Finished reading {} elements", count);
@@ -64,29 +56,18 @@ public class BasicProduceApp {
         }
     }
 
-    private static Effectif readCsv(String line) {
-        String[] columns = line.split(";");
-        return new Effectif(
-                Integer.parseInt(columns[0]),
-                columns[1],
-                columns[2],
-                columns[3],
-                columns[4],
-                columns[5],
-                columns[6],
-                columns[7],
-                columns[8],
-                columns[9],
-                columns[10].isEmpty() ? null : Double.parseDouble(columns[10]),
-                columns[11],
-                columns[12].isEmpty() ? null : Double.parseDouble(columns[12]),
-                columns[13],
-                columns[14].isEmpty() ? null : Double.parseDouble(columns[14]),
-                columns[15],
-                columns[16],
-                columns[17],
-                columns[18],
-                columns[19],
-                columns[20]);
+    private static Properties buildKafkaProps() {
+        Properties props = new Properties();
+        props.put("bootstrap.servers", "localhost:9092");
+        // props.put("acks", "1");
+        // props.put("retries", 1);
+        // props.put("compression.type", "none"); // Could be gzip, snappy or lz4
+        //props.put("batch.size", 16384);
+        // props.put("buffer.memory", 33554432);
+        props.put("key.serializer", "org.apache.kafka.common.serialization.IntegerSerializer");
+        props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        return props;
     }
+
+
 }

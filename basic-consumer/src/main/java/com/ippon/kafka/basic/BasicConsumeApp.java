@@ -23,13 +23,7 @@ public class BasicConsumeApp {
     private static Long count = 0L;
 
     public static void main(String[] args) throws InterruptedException {
-        Properties props = new Properties();
-        props.put("bootstrap.servers", "localhost:9092");
-        props.put("group.id", "basic");
-        // props.put("enable.auto.commit", "true");
-        // props.put("auto.commit.interval.ms", "1000");
-        props.put("key.deserializer", "org.apache.kafka.common.serialization.IntegerDeserializer");
-        props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+        Properties props = buildKafkaProps();
 
         KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
         consumer.subscribe(Collections.singleton("effectifs"));
@@ -40,9 +34,10 @@ public class BasicConsumeApp {
                     Effectif effectif = jsonMapper.readValue(record.value(), Effectif.class);
                     count++;
                     if (count % 10000 == 0) {
-                        logger.info("Read {} messages, last => year : {}, location : {}",
+                        logger.info("Read {} messages, latest element: {year={}, nbStudents={}, location={}}",
                                 count,
                                 effectif.getYear(),
+                                effectif.getStudentCount(),
                                 effectif.getGeographicUnit());
                     }
                 } catch (IOException e) {
@@ -50,5 +45,16 @@ public class BasicConsumeApp {
                 }
             }
         }
+    }
+
+    private static Properties buildKafkaProps() {
+        Properties props = new Properties();
+        props.put("bootstrap.servers", "localhost:9092");
+        props.put("group.id", "basic");
+        // props.put("enable.auto.commit", "true");
+        // props.put("auto.commit.interval.ms", "1000");
+        props.put("key.deserializer", "org.apache.kafka.common.serialization.IntegerDeserializer");
+        props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+        return props;
     }
 }

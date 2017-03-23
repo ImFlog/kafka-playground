@@ -2,6 +2,8 @@ package com.ippon.kafka.playground.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import java.math.BigDecimal;
+
 /**
  * Created by Flo on 04/03/2017.
  */
@@ -14,7 +16,7 @@ public class Effectif {
     public Effectif(int year, String schoolYear, String geographicLevel,
                     String geographicUnit, String group, String establishmenGroup,
                     String sector, String establishmentSector, String sex,
-                    String sexDesc, Double studentCount, String dutStudents,
+                    String sexDesc, Integer studentCount, String dutStudents,
                     Double dutStudentsCount, String ingStudents, Double ingStudentsCount,
                     String freeData, String data, String secret, String secretData,
                     String geoLevel, String geoLevelId) {
@@ -74,7 +76,7 @@ public class Effectif {
     private String sexDesc;
 
     // Nombre total d’étudiants inscrits
-    private Double studentCount;
+    private Integer studentCount;
 
     // A des effectifs en formations de DUT
     private String dutStudents;
@@ -186,11 +188,11 @@ public class Effectif {
         this.sexDesc = sexDesc;
     }
 
-    public Double getStudentCount() {
+    public Integer getStudentCount() {
         return studentCount;
     }
 
-    public void setStudentCount(Double studentCount) {
+    public void setStudentCount(Integer studentCount) {
         this.studentCount = studentCount;
     }
 
@@ -272,5 +274,31 @@ public class Effectif {
 
     public void setGeoLevelId(String geoLevelId) {
         this.geoLevelId = geoLevelId;
+    }
+
+    public static Effectif buildEffectif(String line)   {
+            String[] columns = line.split(";");
+            return new Effectif(
+                    Integer.parseInt(columns[0]),
+                    columns[1],
+                    columns[2],
+                    columns[3],
+                    columns[4],
+                    columns[5],
+                    columns[6],
+                    columns[7],
+                    columns[8],
+                    columns[9],
+                    columns[10].isEmpty() ? null : new BigDecimal(columns[10]).toBigInteger().intValue(),
+                    columns[11],
+                    columns[12].isEmpty() ? null : Double.parseDouble(columns[12]),
+                    columns[13],
+                    columns[14].isEmpty() ? null : Double.parseDouble(columns[14]),
+                    columns[15],
+                    columns[16],
+                    columns[17],
+                    columns[18],
+                    columns[19],
+                    columns[20]);
     }
 }
