@@ -1,6 +1,6 @@
 package com.ippon.kafka.streams.processor;
 
-import com.ippon.kafka.streams.model.Effectif;
+import com.ippon.kafka.playground.model.Effectif;
 import com.ippon.kafka.streams.serdes.SerdeFactory;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.Serde;

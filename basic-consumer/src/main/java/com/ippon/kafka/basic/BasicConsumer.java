@@ -1,7 +1,7 @@
 package com.ippon.kafka.basic;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ippon.kafka.basic.model.Effectif;
+import com.ippon.kafka.playground.model.Effectif;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;

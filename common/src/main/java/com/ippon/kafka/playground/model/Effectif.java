@@ -1,4 +1,4 @@
-package com.ippon.kafka.basic.model;
+package com.ippon.kafka.playground.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 

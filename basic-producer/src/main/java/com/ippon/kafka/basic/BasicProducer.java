@@ -1,15 +1,11 @@
 package com.ippon.kafka.basic;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ippon.kafka.basic.model.Effectif;
+import com.ippon.kafka.playground.model.Effectif;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;

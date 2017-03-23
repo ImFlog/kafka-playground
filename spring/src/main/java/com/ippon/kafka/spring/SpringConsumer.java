@@ -1,7 +1,7 @@
 package com.ippon.kafka.spring;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ippon.kafka.spring.model.Effectif;
+import com.ippon.kafka.playground.model.Effectif;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
