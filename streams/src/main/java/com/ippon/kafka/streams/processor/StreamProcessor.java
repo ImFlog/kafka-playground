@@ -14,6 +14,7 @@ import org.apache.kafka.streams.kstream.KTable;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -80,31 +81,31 @@ public class StreamProcessor implements CommandLineRunner {
         //              3. Student count variation
         // ------------------------------------------------------
         // Students per commune 2014
-        KTable<String, Double> studentsPerCommune2014 = effectifsStream
+        KTable<String, Integer> studentsPerCommune2014 = effectifsStream
                 .filter((year, effectif) -> year == 2014)
                 .groupBy((year, effectif) -> effectif.getGeographicUnit(), Serdes.String(), effectifSerde)
                 .aggregate(
-                        () -> 0D,
+                        () -> 0,
                         ((aggKey, value, aggregate) ->
                                 aggregate + (value.getStudentCount() != null ? value.getStudentCount() : 0)),
-                        Serdes.Double(),
+                        Serdes.Integer(),
                         "studentsPerCommune2014");
 
         // Students per commune 2015
-        KTable<String, Double> studentsPerCommune2015 = effectifsStream
+        KTable<String, Integer> studentsPerCommune2015 = effectifsStream
                 .filter((year, effectif) -> year == 2015)
                 .groupBy((year, effectif) -> effectif.getGeographicUnit(), Serdes.String(), effectifSerde)
                 .aggregate(
-                        () -> 0D,
+                        () -> 0,
                         ((aggKey, value, aggregate) ->
                                 aggregate + (value.getStudentCount() != null ? value.getStudentCount() : 0)),
-                        Serdes.Double(),
+                        Serdes.Integer(),
                         "studentsPerCommune2015");
 
         // Student count variation between 2014 and 2015
         studentsPerCommune2014
                 .leftJoin(studentsPerCommune2015, this::calculateEvolution)
-                .print("Evolution 2014 2015");
+                .print(Serdes.String(), Serdes.String(), "Evolution 2014 2015");
 
         // ------------------------------------------------------
         //                  Start processing
@@ -115,18 +116,18 @@ public class StreamProcessor implements CommandLineRunner {
         System.out.println("Kafka Streams started");
     }
 
-    private Double calculateEvolution(Double previousValue, Double newValue) {
+    private String calculateEvolution(Integer previousValue, Integer newValue) {
         if (previousValue == null && newValue == null) {
-            return 0D;
+            return "0%";
         }
         if (previousValue == null) {
-            return 100D;
+            return "100%";
         }
         if (newValue == null) {
-            return -100D;
+            return "-100%";
         }
 
-        return  ((newValue - previousValue) / previousValue) * 100;
+        return String.format("%.2f%%", ((newValue.doubleValue() - previousValue) / previousValue) * 100);
     }
 
     /**
