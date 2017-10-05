@@ -16,6 +16,7 @@ import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Properties;
 
+// TODO : use kafka-junit
 public abstract class KafkaAbstractTest {
 
     private static final String ZKHOST = "127.0.0.1";

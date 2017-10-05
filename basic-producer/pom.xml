@@ -8,7 +8,7 @@
     <parent>
         <groupId>com.ippon.kafka</groupId>
         <artifactId>kafka-parent-pom</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>0.0.1</version>
     </parent>
 
     <dependencies>
@@ -17,18 +17,5 @@
             <artifactId>kafka-clients</artifactId>
             <version>${kafka.version}</version>
         </dependency>
-        <dependency>
-            <groupId>com.ippon.kafka</groupId>
-            <artifactId>kafka-common</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-        </dependency>
     </dependencies>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>
 </project>

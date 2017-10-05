@@ -50,11 +50,13 @@ public class BasicConsumeApp {
     private static Properties buildKafkaProps() {
         Properties props = new Properties();
         props.put("bootstrap.servers", "localhost:9092");
-        props.put("group.id", "basic");
-        // props.put("enable.auto.commit", "true");
-        // props.put("auto.commit.interval.ms", "1000");
         props.put("key.deserializer", "org.apache.kafka.common.serialization.IntegerDeserializer");
         props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+        // Consumer group ID
+        props.put("group.id", "basic");
+
+        // Enabling transaction support if necessary.
+        props.put("isolation.level", "read_committed");
         return props;
     }
 }

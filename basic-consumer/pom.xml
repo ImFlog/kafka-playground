@@ -8,7 +8,7 @@
     <parent>
         <groupId>com.ippon.kafka</groupId>
         <artifactId>kafka-parent-pom</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>0.0.1</version>
     </parent>
 
     <dependencies>
@@ -16,11 +16,6 @@
             <groupId>org.apache.kafka</groupId>
             <artifactId>kafka-clients</artifactId>
             <version>${kafka.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.ippon.kafka</groupId>
-            <artifactId>kafka-common</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
