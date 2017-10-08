@@ -14,7 +14,8 @@ import java.io.InputStreamReader;
 import java.util.Objects;
 
 /**
- * Created by @ImFlog on 04/03/2017.
+ * Same job as BasicProducerApp except that it relies on Spring Kafka.
+ * We just inject a kafkaTemplate for producing instead of building one.
  */
 @Component
 public class SpringProducer implements CommandLineRunner {
@@ -25,8 +26,12 @@ public class SpringProducer implements CommandLineRunner {
     private static final String TOPIC = "effectifs-spring";
     private Long count = 0L;
 
-    @Autowired
     private KafkaTemplate<Integer, String> template;
+
+    @Autowired
+    public SpringProducer(KafkaTemplate<Integer, String> template) {
+        this.template = template;
+    }
 
     @Override
     public void run(String... args) {
@@ -39,6 +44,13 @@ public class SpringProducer implements CommandLineRunner {
                 .filter(Objects::nonNull)
                 .forEach(this::sendToKafka);
         logger.info("Finished reading {} elements", count);
+
+        // Transaction example
+        template.executeInTransaction(t -> {
+            t.send("transaction", "Record 1");
+            t.send("transaction", "Record 2");
+            return true;
+        });
     }
 
     private void sendToKafka(Effectif effectif) {

@@ -7,9 +7,6 @@ import org.apache.kafka.common.serialization.Serializer;
 
 import java.util.Map;
 
-/**
- * Created by @ImFlog on 18/03/2017.
- */
 public class SerdeFactory {
     public static <T> Serde<T> createSerde(Class<T> clazz, Map<String, Object> serdeProps) {
         Serializer<T> serializer = new JsonPOJOSerializer<>();

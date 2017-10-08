@@ -6,9 +6,6 @@ import org.apache.kafka.common.serialization.Deserializer;
 
 import java.util.Map;
 
-/**
- * Created by @ImFlog on 18/03/2017.
- */
 public class JsonPOJODeserializer<T> implements Deserializer<T> {
     private ObjectMapper objectMapper = new ObjectMapper();
 

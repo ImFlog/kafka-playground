@@ -8,27 +8,32 @@ import java.util.Objects;
 import java.util.Properties;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.KafkaException;
+import org.apache.kafka.common.errors.ProducerFencedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Created by @ImFlog on 15/02/2017.
+ * Simple producer example.
+ * Read the full_data.csv file, and the content to the "effectifs" topic.
+ *
+ * Second part shows an example with a transaction.
  */
-public class BasicProduceApp {
+public class BasicProducerApp {
 
     private static final ObjectMapper jsonMapper = new ObjectMapper();
-    private static final Logger logger = LoggerFactory.getLogger(BasicProduceApp.class);
+    private static final Logger logger = LoggerFactory.getLogger(BasicProducerApp.class);
 
     private static Long count = 0L;
 
     public static void main(String[] args) throws InterruptedException {
         Properties props = buildKafkaProps();
 
-        // Init producer from props
+        // Send file content to effectifs.
         try (KafkaProducer<Integer, String> kafkaProducer = new KafkaProducer<>(props)) {
             // Read file
             BufferedReader bufferedReader = new BufferedReader(
-                new InputStreamReader(BasicProduceApp.class.getResourceAsStream("/" + args[0])));
+                new InputStreamReader(BasicProducerApp.class.getResourceAsStream("/" + args[0])));
             bufferedReader.lines()
                 .skip(1L) // Skip headers
                 .map(Effectif::buildEffectif)
@@ -37,7 +42,20 @@ public class BasicProduceApp {
             logger.info("Finished reading {} elements", count);
         }
 
-        // TODO : Add transaction send example.
+        // Transaction example
+        try (KafkaProducer<Integer, String> kafkaProducer = new KafkaProducer<>(props)) {
+         kafkaProducer.initTransactions();
+            try {
+                kafkaProducer.beginTransaction();
+                kafkaProducer.send(new ProducerRecord<>("transaction", "Record 1"));
+                kafkaProducer.send(new ProducerRecord<>("transaction", "Record 2"));
+                kafkaProducer.commitTransaction();
+            } catch(ProducerFencedException e) {
+                kafkaProducer.close();
+            } catch(KafkaException e) {
+                kafkaProducer.abortTransaction();
+            }
+        }
     }
 
     private static void sendToKafka(KafkaProducer<Integer, String> kafkaProducer, Effectif effectif) {

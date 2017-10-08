@@ -12,12 +12,14 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Properties;
 
-/**
- * Created by @ImFlog on 15/02/2017.
- */
-public class BasicConsumeApp {
 
-    private static final Logger logger = LoggerFactory.getLogger(BasicConsumeApp.class);
+/**
+ * Simple consumer example.
+ * Read the effectifs topic, deserialize the result and count the read items.
+ */
+public class BasicConsumerApp {
+
+    private static final Logger logger = LoggerFactory.getLogger(BasicConsumerApp.class);
     private static final ObjectMapper jsonMapper = new ObjectMapper();
 
     private static Long count = 0L;

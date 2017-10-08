@@ -17,9 +17,7 @@ import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by @ImFlog on 15/02/2017.
- */
+
 @EnableKafka
 @SpringBootApplication
 public class SpringApplication {
