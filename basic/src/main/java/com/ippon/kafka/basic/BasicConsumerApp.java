@@ -21,6 +21,7 @@ public class BasicConsumerApp {
 
     private static final Logger logger = LoggerFactory.getLogger(BasicConsumerApp.class);
     private static final ObjectMapper jsonMapper = new ObjectMapper();
+    public static final String EFFECTIFS_TOPIC = "effectifs";
 
     private static Long count = 0L;
 
@@ -28,7 +29,7 @@ public class BasicConsumerApp {
         Properties props = buildKafkaProps();
 
         KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
-        consumer.subscribe(Collections.singleton("effectifs"));
+        consumer.subscribe(Collections.singleton(EFFECTIFS_TOPIC));
         while (true) {
             ConsumerRecords<String, String> records = consumer.poll(100);
             for (ConsumerRecord<String, String> record : records) {
@@ -57,7 +58,7 @@ public class BasicConsumerApp {
         // Consumer group ID
         props.put("group.id", "basic");
 
-        // Enabling transaction support if necessary.
+        // Enabling transaction support
         props.put("isolation.level", "read_committed");
         return props;
     }
