@@ -73,7 +73,7 @@ public class StreamProcessor implements CommandLineRunner {
 
         // ------------------------------------------------------
         //              3. Student count variation
-        // ------------------------------------------------------
+        // ------------------------------------------------------w
         // Students per commune 2014
         KTable<String, Integer> studentsPerCommune2014 = effectifsStream
                 .filter((year, effectif) -> year == 2014)
@@ -140,6 +140,9 @@ public class StreamProcessor implements CommandLineRunner {
         // default serdes for serializing and deserializing key and value from and to streams
         settings.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
         settings.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
+
+        // Enable exactly once
+        settings.put(StreamsConfig.PROCESSING_GUARANTEE_CONFIG, StreamsConfig.EXACTLY_ONCE);
 
         // We can also set Consumer properties
         // settings.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
