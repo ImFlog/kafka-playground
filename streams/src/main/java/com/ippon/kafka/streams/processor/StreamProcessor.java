@@ -59,9 +59,9 @@ public class StreamProcessor implements CommandLineRunner {
                         TWITTER_TOPIC);
         twitterStream.print();
 
-        // 2. Count the user who tweeted the most about bdx.io
+        // 2. Count the user who tweeted the most about kafka
         twitterStream
-                .filter((key, value) -> value.getText().toLowerCase().contains("bdxio"))
+                .filter((key, value) -> value.getText().toLowerCase().contains("kafka"))
                 .groupBy((key, value) -> value.getUser().getName(), Serdes.String(), twitterStatusSerde)
                 .count(TWEET_PER_USER);
 
@@ -80,9 +80,10 @@ public class StreamProcessor implements CommandLineRunner {
                         HASHTAG_PER_USER
                 );
 
-        // Faire une jointure entre la KTable des talk et l'heure des tweets du stream
+        // 4. Join on bdxio schedule and bdxio tweets on the tweet createAt field.
         KTable<String, String> talksSchedules = kStreamBuilder.table(Serdes.String(), Serdes.String(), SCHEDULE_TOPIC);
         twitterStream
+                .filter((key, value) -> value.getText().toLowerCase().contains("bdxio"))
                 .selectKey((key, value) -> truncateDate(value))
                 .groupByKey(Serdes.String(), twitterStatusSerde)
                 .count("test_count")
